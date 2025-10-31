@@ -19,6 +19,7 @@ const Index = () => {
   const [error, setError] = useState("");
   const [showPityModal, setShowPityModal] = useState(false);
   const [showFormsModal, setShowFormsModal] = useState(false);
+  const [showHomeModal, setShowHomeModal] = useState(false);
   const [closeAttempts, setCloseAttempts] = useState(0);
   const [buttonOffset, setButtonOffset] = useState({ x: 0, y: 0 });
   const [imageOffset, setImageOffset] = useState(0);
@@ -292,13 +293,19 @@ const Index = () => {
                 gap: '24px',
                 alignItems: 'center'
               }}>
-                <Link 
-                  to="/" 
-                  className="text-foreground font-semibold"
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setStage("dashboard");
+                    setShowHomeModal(true);
+                  }}
+                  className="text-foreground font-semibold cursor-pointer bg-transparent border-none outline-none"
                   style={{ gridColumn: '1', gridRow: '1' }}
                 >
                   Home
-                </Link>
+                </button>
                 <Link 
                   to="/features" 
                   className="text-corporate-gray transition-colors hover:text-foreground"
@@ -717,6 +724,57 @@ const Index = () => {
               </button>
             </form>
           )}
+        </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Home Definition Modal - Funny Definition */}
+      {showHomeModal && (
+        <Dialog 
+          open={true}
+          onOpenChange={(open) => {
+            if (!open) {
+              setShowHomeModal(false);
+            }
+          }}
+        >
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-2xl">What is "Home"? 🏠</DialogTitle>
+            <DialogDescription>
+              A Philosophical Investigation Into The Nature Of "Home"
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="mt-4 space-y-4">
+            <div className="rounded-lg border border-corporate-border bg-corporate-darker p-6">
+              <h3 className="mb-3 text-lg font-semibold text-corporate-blue">Dictionary Definition:</h3>
+              <p className="text-sm text-corporate-gray mb-4 italic">
+                "Home: A place where one lives; a residence. Also, the dashboard page of this portal."
+              </p>
+              
+              <h3 className="mb-3 text-lg font-semibold text-corporate-blue">Our Definition:</h3>
+              <p className="text-sm leading-relaxed">
+                <span className="font-semibold">Home</span> is where the dashboard is. It's that magical place 
+                where you were before you clicked "Features" or "Forms", and it's where you are now because you 
+                clicked "Home" - creating a beautiful philosophical paradox: you're already home, but you clicked 
+                home to come home to where you already were. 
+              </p>
+              
+              <p className="text-sm leading-relaxed mt-3">
+                Think of it like Schrödinger's Dashboard: you're both here and not here until you observe the 
+                modal confirming that yes, indeed, this is Home. The button works like a compass that always 
+                points... well, here. Welcome Home! 🎉
+              </p>
+              
+              <div className="mt-4 rounded-md border border-yellow-500/30 bg-yellow-500/10 p-3">
+                <p className="text-xs text-yellow-500/90">
+                  💡 <strong>Fun Fact:</strong> In web development, "Home" is typically the root route ("/"), 
+                  but in this portal, Home is wherever your dashboard dreams take you. Mostly here, though.
+                </p>
+              </div>
+            </div>
+          </div>
         </DialogContent>
         </Dialog>
       )}
