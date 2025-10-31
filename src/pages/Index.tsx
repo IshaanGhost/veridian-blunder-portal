@@ -285,47 +285,82 @@ const Index = () => {
               <div className="h-8 w-8 rounded bg-corporate-blue" />
               <h1 className="text-xl font-bold">Veridian Dynamics</h1>
             </div>
-            {stage === "dashboard" ? (
-              <nav style={{ display: 'grid', gridTemplateColumns: 'auto auto auto', gap: '24px', alignItems: 'center' }}>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
+            <nav style={{ 
+              display: stage === "dashboard" ? 'grid' : 'none',
+              gridTemplateColumns: 'auto auto auto',
+              gap: '24px',
+              alignItems: 'center',
+              visibility: stage === "dashboard" ? 'visible' : 'hidden',
+              position: 'relative'
+            }}>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (stage === "dashboard") {
                     navigate("/");
-                  }}
-                  className="text-corporate-gray transition-colors hover:text-foreground cursor-pointer bg-transparent border-none outline-none"
-                  style={{ gridColumn: '1', padding: 0, margin: 0 }}
-                >
-                  Home
-                </button>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
+                  }
+                }}
+                className="text-corporate-gray transition-colors hover:text-foreground cursor-pointer bg-transparent border-none outline-none"
+                style={{ 
+                  gridColumn: '1 / 2',
+                  gridRow: '1',
+                  padding: 0,
+                  margin: 0,
+                  position: 'relative',
+                  zIndex: 1
+                }}
+                disabled={stage !== "dashboard"}
+              >
+                Home
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (stage === "dashboard") {
                     navigate("/features");
-                  }}
-                  className="text-corporate-gray transition-colors hover:text-foreground cursor-pointer bg-transparent border-none outline-none"
-                  style={{ gridColumn: '2', padding: 0, margin: 0 }}
-                >
-                  Features
-                </button>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
+                  }
+                }}
+                className="text-corporate-gray transition-colors hover:text-foreground cursor-pointer bg-transparent border-none outline-none"
+                style={{ 
+                  gridColumn: '2 / 3',
+                  gridRow: '1',
+                  padding: 0,
+                  margin: 0,
+                  position: 'relative',
+                  zIndex: 1
+                }}
+                disabled={stage !== "dashboard"}
+              >
+                Features
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (stage === "dashboard") {
                     setShowFormsModal(true);
                     setCloseAttempts(0);
-                  }}
-                  className="text-corporate-gray transition-colors hover:text-foreground cursor-pointer bg-transparent border-none outline-none"
-                  style={{ gridColumn: '3', padding: 0, margin: 0 }}
-                >
-                  Forms
-                </button>
-              </nav>
-            ) : null}
+                  }
+                }}
+                className="text-corporate-gray transition-colors hover:text-foreground cursor-pointer bg-transparent border-none outline-none"
+                style={{ 
+                  gridColumn: '3 / 4',
+                  gridRow: '1',
+                  padding: 0,
+                  margin: 0,
+                  position: 'relative',
+                  zIndex: 1
+                }}
+                disabled={stage !== "dashboard"}
+              >
+                Forms
+              </button>
+            </nav>
           </div>
         </div>
       </header>
