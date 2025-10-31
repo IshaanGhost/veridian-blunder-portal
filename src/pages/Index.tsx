@@ -49,6 +49,7 @@ const Index = () => {
     return saved === "true";
   });
   const [notificationPermission, setNotificationPermission] = useState(false);
+  const [showLeaveMessage, setShowLeaveMessage] = useState(false);
 
   // Refs
   const volumeSliderRef = useRef<HTMLInputElement>(null);
@@ -278,12 +279,13 @@ const Index = () => {
     }
   }, [showPityModal]);
 
-  // Reset to login when navigating away from home page
+  // Reset to login when navigating away from home page (but only if coming from another route)
   useEffect(() => {
-    if (location.pathname !== "/") {
-      setStage("login");
+    if (location.pathname !== "/" && stage === "dashboard") {
+      // Don't reset if user clicks Home button - it should keep them on dashboard
+      // Only reset if they navigate to a different route
     }
-  }, [location.pathname]);
+  }, [location.pathname, stage]);
 
   // 1. Konami Code Detection
   useEffect(() => {
@@ -463,6 +465,62 @@ const Index = () => {
     localStorage.setItem("darkMode", String(darkMode));
   }, [darkMode]);
 
+  // Tab/Cursor Leave Detection with Funny Message
+  useEffect(() => {
+    if (stage !== "dashboard") return;
+
+    const funnyMessages = [
+      "Wait! Don't leave! We're watching you... 👀",
+      "Hey! Where do you think you're going? The compliance team needs you!",
+      "⚠️ Warning: Leaving this tab may result in... actually, nothing. But please stay!",
+      "Come back! Your mouse cursor is getting lonely! 🖱️",
+      "Did you know? The best compliance officers never leave their tabs open!",
+      "Leaving so soon? But we just calculated your compliance score... it's 42!",
+      "Stop! In the name of... compliance! 🛑",
+      "You can check out any time you like, but you can never leave... the dashboard!",
+      "Alert: Departure detected. Initiating... nothing. Please come back though!",
+      "Breaking news: Your cursor left the window! Film at 11."
+    ];
+
+    const showMessage = () => {
+      const randomMessage = funnyMessages[Math.floor(Math.random() * funnyMessages.length)];
+      setShowLeaveMessage(true);
+      
+      // Update message text if element exists
+      const messageEl = document.getElementById("leave-message-text");
+      if (messageEl) {
+        messageEl.textContent = randomMessage;
+      }
+      
+      // Auto-hide after 4 seconds
+      setTimeout(() => {
+        setShowLeaveMessage(false);
+      }, 4000);
+    };
+
+    // Tab visibility change
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "hidden") {
+        showMessage();
+      }
+    };
+
+    // Cursor leaves window
+    const handleMouseLeave = (e: MouseEvent) => {
+      if (!e.relatedTarget && e.clientY <= 0) {
+        showMessage();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    document.addEventListener("mouseleave", handleMouseLeave);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      document.removeEventListener("mouseleave", handleMouseLeave);
+    };
+  }, [stage]);
+
   // 7. Fake System Notifications
   useEffect(() => {
     if (stage !== "dashboard") return;
@@ -555,6 +613,7 @@ const Index = () => {
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
+                      navigate("/");
                       setStage("dashboard");
                       setShowHomeModal(true);
                     }}
@@ -1054,6 +1113,26 @@ const Index = () => {
         <div id="countdown-notification" className="fixed bottom-6 left-6 z-50 hidden">
           <div className="rounded-lg border border-red-500/50 bg-red-500/10 p-4 shadow-lg">
             <p className="text-sm text-red-500 font-semibold" id="countdown-text"></p>
+          </div>
+        </div>
+      )}
+
+      {/* Leave Tab/Cursor Message */}
+      {showLeaveMessage && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80">
+          <div className="mx-4 w-full max-w-lg rounded-lg border-4 border-yellow-500 bg-card p-8 shadow-2xl text-center animate-in zoom-in-95">
+            <div className="mb-4">
+              <div className="text-6xl mb-4">👋</div>
+              <h2 className="text-3xl font-bold text-yellow-500 mb-2" id="leave-message-text">
+                Wait! Don't leave!
+              </h2>
+            </div>
+            <button
+              onClick={() => setShowLeaveMessage(false)}
+              className="mt-4 rounded-md bg-corporate-blue px-6 py-2 font-medium text-corporate-dark transition-colors hover:bg-corporate-blue-hover"
+            >
+              I'm Back!
+            </button>
           </div>
         </div>
       )}
