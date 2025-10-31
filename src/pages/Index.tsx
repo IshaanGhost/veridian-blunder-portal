@@ -261,20 +261,32 @@ const Index = () => {
             </div>
             <nav className="flex space-x-6">
               <button
-                onClick={() => navigate("/")}
-                className="text-corporate-gray transition-colors hover:text-foreground cursor-pointer bg-transparent border-none"
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate("/");
+                }}
+                className="text-corporate-gray transition-colors hover:text-foreground cursor-pointer bg-transparent border-none outline-none"
               >
                 Home
               </button>
               <button
-                onClick={() => navigate("/features")}
-                className="text-corporate-gray transition-colors hover:text-foreground cursor-pointer bg-transparent border-none"
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate("/features");
+                }}
+                className="text-corporate-gray transition-colors hover:text-foreground cursor-pointer bg-transparent border-none outline-none"
               >
                 Features
               </button>
               <button
-                onClick={() => navigate("/forms")}
-                className="text-corporate-gray transition-colors hover:text-foreground cursor-pointer bg-transparent border-none"
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate("/forms");
+                }}
+                className="text-corporate-gray transition-colors hover:text-foreground cursor-pointer bg-transparent border-none outline-none"
               >
                 Forms
               </button>
