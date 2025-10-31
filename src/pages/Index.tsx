@@ -279,13 +279,17 @@ const Index = () => {
     }
   }, [showPityModal]);
 
-  // Reset to login when navigating away from home page (but only if coming from another route)
+  // Preserve dashboard stage when on home route
   useEffect(() => {
-    if (location.pathname !== "/" && stage === "dashboard") {
-      // Don't reset if user clicks Home button - it should keep them on dashboard
-      // Only reset if they navigate to a different route
+    if (location.pathname === "/" && stage === "dashboard") {
+      // Keep dashboard stage when on home route
+      return;
     }
-  }, [location.pathname, stage]);
+    // Only reset to login if navigating away from "/" and not already on dashboard
+    if (location.pathname !== "/" && stage === "login") {
+      // Stay on login if already there
+    }
+  }, [location.pathname]);
 
   // 1. Konami Code Detection
   useEffect(() => {
@@ -613,7 +617,10 @@ const Index = () => {
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      navigate("/");
+                      // Ensure we're on dashboard and show home modal
+                      if (location.pathname !== "/") {
+                        navigate("/");
+                      }
                       setStage("dashboard");
                       setShowHomeModal(true);
                     }}
