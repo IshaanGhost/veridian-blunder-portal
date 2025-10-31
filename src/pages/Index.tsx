@@ -285,24 +285,41 @@ const Index = () => {
               <div className="h-8 w-8 rounded bg-corporate-blue" />
               <h1 className="text-xl font-bold">Veridian Dynamics</h1>
             </div>
-            <nav style={{ 
-              display: stage === "dashboard" ? 'grid' : 'none',
-              gridTemplateColumns: 'auto auto auto',
-              gap: '24px',
-              alignItems: 'center',
-              visibility: stage === "dashboard" ? 'visible' : 'hidden',
-              position: 'relative'
-            }}>
-              <Link to="/" className="text-foreground font-semibold">
-                Home
-              </Link>
-              <Link to="/features" className="text-corporate-gray transition-colors hover:text-foreground">
-                Features
-              </Link>
-              <Link to="/forms" className="text-corporate-gray transition-colors hover:text-foreground">
-                Forms
-              </Link>
-            </nav>
+            {stage === "dashboard" ? (
+              <nav style={{ 
+                display: 'grid',
+                gridTemplateColumns: 'auto auto auto',
+                gap: '24px',
+                alignItems: 'center'
+              }}>
+                <Link 
+                  to="/" 
+                  className="text-foreground font-semibold"
+                  style={{ gridColumn: '1', gridRow: '1' }}
+                >
+                  Home
+                </Link>
+                <Link 
+                  to="/features" 
+                  className="text-corporate-gray transition-colors hover:text-foreground"
+                  style={{ gridColumn: '2', gridRow: '1' }}
+                >
+                  Features
+                </Link>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setShowFormsModal(true);
+                    setCloseAttempts(0);
+                  }}
+                  className="text-corporate-gray transition-colors hover:text-foreground cursor-pointer bg-transparent border-none outline-none"
+                  style={{ gridColumn: '3', gridRow: '1' }}
+                >
+                  Forms
+                </button>
+              </nav>
+            ) : null}
           </div>
         </div>
       </header>
