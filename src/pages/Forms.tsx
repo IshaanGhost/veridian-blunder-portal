@@ -1,5 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 const Forms = () => {
   const [submitted, setSubmitted] = useState(false);
@@ -14,6 +21,36 @@ const Forms = () => {
     priority: "",
     description: ""
   });
+
+  // Fun feature states
+  const [konamiSequence, setKonamiSequence] = useState<string[]>([]);
+  const [showKonamiCelebration, setShowKonamiCelebration] = useState(false);
+  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
+  const [cursorEmoji, setCursorEmoji] = useState("🔒");
+  const [showKeyboardRecalibration, setShowKeyboardRecalibration] = useState(false);
+  const [pressedKeys, setPressedKeys] = useState<Set<string>>(new Set());
+  const [soundEnabled, setSoundEnabled] = useState(() => {
+    const saved = localStorage.getItem("soundEnabled");
+    return saved !== null ? saved === "true" : true;
+  });
+  const [volume, setVolume] = useState(() => {
+    const saved = localStorage.getItem("volume");
+    return saved ? parseFloat(saved) : 0.5;
+  });
+  const [clickCount, setClickCount] = useState(() => {
+    const saved = localStorage.getItem("clickCount");
+    return saved ? parseInt(saved, 10) : 0;
+  });
+  const [lastAchievement, setLastAchievement] = useState<number | null>(null);
+  const [darkMode, setDarkMode] = useState(() => {
+    const saved = localStorage.getItem("darkMode");
+    return saved === "true";
+  });
+  const [notificationPermission, setNotificationPermission] = useState(false);
+
+  // Refs
+  const volumeSliderRef = useRef<HTMLInputElement>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
 
   // Randomly freeze form fields after 10 seconds
   useEffect(() => {
@@ -33,6 +70,234 @@ const Forms = () => {
     }, 8000);
     return () => clearInterval(interval);
   }, [formData.description]);
+
+  // 1. Konami Code Detection
+  useEffect(() => {
+    const konamiCode = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight", "KeyB", "KeyA"];
+    
+    const handleKeyPress = (e: KeyboardEvent) => {
+      setKonamiSequence((prev) => {
+        const newSeq = [...prev, e.code];
+        if (newSeq.length > konamiCode.length) {
+          newSeq.shift();
+        }
+        
+        if (newSeq.length === konamiCode.length && 
+            newSeq.every((key, idx) => key === konamiCode[idx])) {
+          setShowKonamiCelebration(true);
+          return [];
+        }
+        return newSeq;
+      });
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+    return () => window.removeEventListener("keydown", handleKeyPress);
+  }, []);
+
+  // 2. Cursor Emoji Follower
+  useEffect(() => {
+    const emojis = ["🔒", "📊", "☕"];
+    let emojiIndex = 0;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      setCursorPos({ x: e.clientX, y: e.clientY });
+    };
+
+    const rotateEmoji = () => {
+      setCursorEmoji(emojis[emojiIndex]);
+      emojiIndex = (emojiIndex + 1) % emojis.length;
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    const emojiInterval = setInterval(rotateEmoji, 2000);
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      clearInterval(emojiInterval);
+    };
+  }, []);
+
+  // 3. Keyboard Recalibration Modal
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === "INPUT" || target.tagName === "TEXTAREA") {
+        if (Math.random() < 0.01) {
+          setShowKeyboardRecalibration(true);
+          setPressedKeys(new Set());
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+    return () => window.removeEventListener("keydown", handleKeyPress);
+  }, []);
+
+  // Track A-Z keys for recalibration
+  useEffect(() => {
+    if (!showKeyboardRecalibration) return;
+
+    const handleKeyPress = (e: KeyboardEvent) => {
+      const key = e.key.toUpperCase();
+      if (key >= "A" && key <= "Z") {
+        setPressedKeys((prev) => {
+          const newSet = new Set([...prev, key]);
+          if (newSet.size === 26) {
+            setTimeout(() => {
+              setShowKeyboardRecalibration(false);
+              setPressedKeys(new Set());
+            }, 500);
+          }
+          return newSet;
+        });
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+    return () => window.removeEventListener("keydown", handleKeyPress);
+  }, [showKeyboardRecalibration]);
+
+  // 4. Keyboard Sound Effects
+  useEffect(() => {
+    if (!soundEnabled) return;
+
+    if (!audioContextRef.current) {
+      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+    }
+
+    const playSound = () => {
+      if (!audioContextRef.current || !soundEnabled) return;
+      
+      const ctx = audioContextRef.current;
+      const oscillator = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(ctx.destination);
+      
+      oscillator.type = "square";
+      oscillator.frequency.value = 200 + Math.random() * 400;
+      gainNode.gain.value = volume * 0.1;
+      
+      oscillator.start();
+      oscillator.stop(ctx.currentTime + 0.1);
+    };
+
+    const handleKeyPress = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName !== "INPUT" && target.tagName !== "TEXTAREA") {
+        playSound();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+    return () => window.removeEventListener("keydown", handleKeyPress);
+  }, [soundEnabled, volume]);
+
+  // Save sound settings
+  useEffect(() => {
+    localStorage.setItem("soundEnabled", String(soundEnabled));
+    localStorage.setItem("volume", String(volume));
+  }, [soundEnabled, volume]);
+
+  // 5. Click Counter with Achievement Badges
+  useEffect(() => {
+    const handleClick = () => {
+      setClickCount((prev) => {
+        const newCount = prev + 1;
+        localStorage.setItem("clickCount", String(newCount));
+        
+        const milestones = [100, 500, 1000, 2500, 5000, 10000];
+        const achieved = milestones.find((m) => newCount >= m && prev < m);
+        
+        if (achieved) {
+          setLastAchievement(achieved);
+          setTimeout(() => setLastAchievement(null), 3000);
+        }
+        
+        return newCount;
+      });
+    };
+
+    document.addEventListener("click", handleClick);
+    return () => document.removeEventListener("click", handleClick);
+  }, []);
+
+  // 6. Dark Mode
+  useEffect(() => {
+    const mainContent = document.querySelector("main");
+    if (mainContent) {
+      if (darkMode) {
+        mainContent.style.filter = "invert(1) rotate(180deg)";
+        mainContent.style.transition = "filter 0.3s ease";
+      } else {
+        mainContent.style.filter = "none";
+      }
+    }
+
+    localStorage.setItem("darkMode", String(darkMode));
+  }, [darkMode]);
+
+  // 7. Fake System Notifications
+  useEffect(() => {
+    if ("Notification" in window && Notification.permission === "default") {
+      Notification.requestPermission().then((permission) => {
+        setNotificationPermission(permission === "granted");
+      });
+    } else if ("Notification" in window && Notification.permission === "granted") {
+      setNotificationPermission(true);
+    }
+
+    const showCountdown = () => {
+      if (Math.random() < 0.3) {
+        const notificationEl = document.getElementById("countdown-notification");
+        const textEl = document.getElementById("countdown-text");
+        if (!notificationEl || !textEl) return;
+
+        let count = 3;
+        notificationEl.classList.remove("hidden");
+        
+        const countdown = setInterval(() => {
+          if (count > 0) {
+            textEl.textContent = `Your session will expire in ${count}...`;
+          } else {
+            textEl.textContent = "... (just kidding!)";
+            setTimeout(() => {
+              notificationEl.classList.add("hidden");
+            }, 2000);
+            clearInterval(countdown);
+          }
+          count--;
+        }, 1000);
+      }
+    };
+
+    const showAbsurdNotification = () => {
+      if (notificationPermission && Math.random() < 0.2) {
+        const messages = [
+          "Critical: Your coffee cup alignment needs adjustment",
+          "Warning: Your mouse cursor is 0.3mm off-center",
+          "Alert: Your chair height is not optimal for compliance",
+          "Important: Your keyboard is 2 degrees off-grid",
+          "Urgent: Please realign your monitor for optimal compliance viewing"
+        ];
+        
+        new Notification("Veridian Dynamics Compliance Alert", {
+          body: messages[Math.floor(Math.random() * messages.length)],
+          icon: "/favicon.svg"
+        });
+      }
+    };
+
+    const countdownInterval = setInterval(showCountdown, 30000);
+    const notificationInterval = setInterval(showAbsurdNotification, 45000);
+
+    return () => {
+      clearInterval(countdownInterval);
+      clearInterval(notificationInterval);
+    };
+  }, [notificationPermission]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -133,17 +398,88 @@ const Forms = () => {
               <div className="h-8 w-8 rounded bg-corporate-blue" />
               <h1 className="text-xl font-bold">Veridian Dynamics</h1>
             </div>
-            <nav className="flex space-x-6">
-              <Link to="/" className="text-corporate-gray transition-colors hover:text-foreground">
-                Home
-              </Link>
-              <Link to="/features" className="text-corporate-gray transition-colors hover:text-foreground">
-                Features
-              </Link>
-              <Link to="/forms" className="text-foreground font-semibold">
-                Forms
-              </Link>
-            </nav>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <nav className="flex space-x-6">
+                <Link to="/" className="text-corporate-gray transition-colors hover:text-foreground">
+                  Home
+                </Link>
+                <Link to="/features" className="text-corporate-gray transition-colors hover:text-foreground">
+                  Features
+                </Link>
+                <Link to="/forms" className="text-foreground font-semibold">
+                  Forms
+                </Link>
+              </nav>
+              
+              {/* Dark Mode Toggle */}
+              <button
+                type="button"
+                onClick={() => setDarkMode(!darkMode)}
+                className="text-corporate-gray hover:text-foreground transition-colors bg-transparent border-none outline-none cursor-pointer text-sm"
+                title={darkMode ? "Disable Dark Mode" : "Enable Dark Mode"}
+              >
+                {darkMode ? "🔆" : "🌙"}
+              </button>
+
+              {/* Sound Toggle & Volume Slider */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', position: 'relative' }}>
+                <button
+                  type="button"
+                  onClick={() => setSoundEnabled(!soundEnabled)}
+                  className="text-corporate-gray hover:text-foreground transition-colors bg-transparent border-none outline-none cursor-pointer text-sm"
+                  title={soundEnabled ? "Mute Sounds" : "Enable Sounds"}
+                >
+                  {soundEnabled ? "🔊" : "🔇"}
+                </button>
+                {soundEnabled && (
+                  <div
+                    onMouseEnter={(e) => {
+                      if (volumeSliderRef.current) {
+                        const slider = volumeSliderRef.current;
+                        const randomX = (Math.random() - 0.5) * 100;
+                        const randomY = (Math.random() - 0.5) * 100;
+                        slider.style.transform = `translate(${randomX}px, ${randomY}px)`;
+                        slider.style.transition = 'transform 0.1s ease';
+                      }
+                    }}
+                    style={{ position: 'relative' }}
+                  >
+                    <input
+                      ref={volumeSliderRef}
+                      type="range"
+                      min="0"
+                      max="1"
+                      step="0.01"
+                      value={1 - volume}
+                      onChange={(e) => {
+                        setVolume(1 - parseFloat(e.target.value));
+                        if (Math.random() < 0.3) {
+                          setTimeout(() => setVolume(0.5), 100);
+                        }
+                      }}
+                      style={{
+                        width: '60px',
+                        height: '4px',
+                        appearance: 'none',
+                        WebkitAppearance: 'none',
+                        background: 'linear-gradient(to right, #333 0%, #555 100%)',
+                        outline: 'none',
+                        cursor: 'pointer',
+                        position: 'relative',
+                        transform: 'rotate(180deg)',
+                        borderRadius: '2px'
+                      }}
+                      title="Volume (inconvenient slider)"
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Click Counter Display */}
+              <div className="text-xs text-corporate-gray">
+                Clicks: {clickCount}
+              </div>
+            </div>
           </div>
         </div>
       </header>
@@ -337,6 +673,121 @@ const Forms = () => {
           </div>
         </div>
       </main>
+
+      {/* Cursor Emoji Follower */}
+      <div
+        style={{
+          position: 'fixed',
+          left: cursorPos.x + 15,
+          top: cursorPos.y + 15,
+          pointerEvents: 'none',
+          zIndex: 9999,
+          fontSize: '20px',
+          transition: 'transform 0.1s ease-out',
+          transform: 'translate(0, 0)'
+        }}
+      >
+        {cursorEmoji}
+      </div>
+
+      {/* Konami Code Celebration Modal */}
+      {showKonamiCelebration && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90">
+          <div className="mx-4 w-full max-w-2xl rounded-lg border-4 border-yellow-500 bg-card p-12 shadow-2xl text-center">
+            <div className="mb-6">
+              <div className="text-8xl mb-4">🎉🎉🎉</div>
+              <h2 className="text-5xl font-bold text-yellow-500 mb-4">Compliance Achieved: 1000%!</h2>
+              <p className="text-2xl text-foreground mb-2">You've unlocked the secret code!</p>
+              <p className="text-lg text-corporate-gray">Maximum compliance levels activated</p>
+            </div>
+            <button
+              onClick={() => setShowKonamiCelebration(false)}
+              className="mt-6 rounded-md bg-corporate-blue px-8 py-3 font-medium text-corporate-dark transition-colors hover:bg-corporate-blue-hover"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Keyboard Recalibration Modal */}
+      {showKeyboardRecalibration && (
+        <Dialog open={true} onOpenChange={(open) => !open && setShowKeyboardRecalibration(false)}>
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle className="text-2xl">Keyboard Recalibration Required</DialogTitle>
+              <DialogDescription>
+                Your keyboard needs to be recalibrated — please press all keys in alphabetical order
+              </DialogDescription>
+            </DialogHeader>
+            <div className="mt-6">
+              <div className="mb-4">
+                <div className="flex justify-between text-sm text-corporate-gray mb-2">
+                  <span>Progress: {pressedKeys.size} / 26 letters</span>
+                  <span>{Math.round((pressedKeys.size / 26) * 100)}%</span>
+                </div>
+                <div className="w-full bg-corporate-darker rounded-full h-3 overflow-hidden">
+                  <div
+                    className="bg-corporate-blue h-full transition-all duration-300"
+                    style={{ width: `${(pressedKeys.size / 26) * 100}%` }}
+                  />
+                </div>
+              </div>
+              <div className="grid gap-1 mb-4" style={{ gridTemplateColumns: 'repeat(13, 1fr)' }}>
+                {Array.from({ length: 26 }, (_, i) => {
+                  const letter = String.fromCharCode(65 + i);
+                  const pressed = pressedKeys.has(letter);
+                  return (
+                    <div
+                      key={letter}
+                      className={`text-xs p-1 text-center rounded ${
+                        pressed
+                          ? "bg-green-500/30 text-green-500"
+                          : "bg-corporate-darker text-corporate-gray"
+                      }`}
+                    >
+                      {letter}
+                    </div>
+                  );
+                })}
+              </div>
+              <button
+                onClick={() => {
+                  setShowKeyboardRecalibration(false);
+                  setPressedKeys(new Set());
+                }}
+                className="w-full rounded-md bg-corporate-blue px-4 py-2 font-medium text-corporate-dark transition-colors hover:bg-corporate-blue-hover"
+              >
+                Cancel
+              </button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Achievement Badge Notification */}
+      {lastAchievement !== null && (
+        <div className="fixed top-20 right-6 z-50 animate-in slide-in-from-right">
+          <div className="rounded-lg border-2 border-yellow-500 bg-yellow-500/10 p-4 shadow-lg">
+            <div className="flex items-center gap-3">
+              <span className="text-3xl">🏆</span>
+              <div>
+                <p className="font-bold text-yellow-500">Achievement Unlocked!</p>
+                <p className="text-sm text-foreground">
+                  You clicked {lastAchievement} times! Compliance through persistence!
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Fake Countdown Notification */}
+      <div id="countdown-notification" className="fixed bottom-6 left-6 z-50 hidden">
+        <div className="rounded-lg border border-red-500/50 bg-red-500/10 p-4 shadow-lg">
+          <p className="text-sm text-red-500 font-semibold" id="countdown-text"></p>
+        </div>
+      </div>
 
       {/* Footer */}
       <footer className="mt-20 border-t border-corporate-border bg-corporate-darker py-8">
