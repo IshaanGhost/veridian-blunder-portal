@@ -81,6 +81,15 @@ All features are available on Dashboard, Features, and Forms pages:
      - And more...
    - Requests notification permission automatically
 
+8. **Leave Tab/Cursor Detection**
+   - Detects when you switch tabs or move cursor outside the window
+   - Shows random funny messages like:
+     - "Wait! Don't leave! We're watching you... 👀"
+     - "Come back! Your mouse cursor is getting lonely! 🖱️"
+     - "Breaking news: Your cursor left the window! Film at 11."
+   - Full-screen modal with dismiss button
+   - Auto-hides after 4 seconds
+
 ## 🚀 Getting Started
 
 ### Prerequisites
