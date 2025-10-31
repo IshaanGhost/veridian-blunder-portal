@@ -4,46 +4,46 @@ import { Link } from "react-router-dom";
 const Features = () => {
   const [features] = useState([
     {
-      title: "Advanced Compliance Tracking",
-      description: "Real-time monitoring of regulatory compliance metrics across all departments and operational units.",
-      icon: "📊",
-      stat: "247",
-      unit: "Active Metrics"
+      title: "Automatic Coffee Temperature Regulation",
+      description: "Monitors ambient office temperature and adjusts your coffee to be exactly 0.5°C too hot or too cold for optimal discomfort.",
+      icon: "☕",
+      stat: "2,847",
+      unit: "Complaints Logged"
     },
     {
-      title: "Automated Audit Generation",
-      description: "Generate comprehensive audit reports automatically with customizable templates and scheduling options.",
-      icon: "📄",
-      stat: "1,892",
-      unit: "Reports Generated"
+      title: "AI-Powered Meeting Scheduler",
+      description: "Uses machine learning to schedule all your meetings during lunch breaks and end-of-day hours exclusively.",
+      icon: "📅",
+      stat: "156%",
+      unit: "Overtime Increase"
     },
     {
-      title: "Risk Assessment Dashboard",
-      description: "Visualize and analyze potential risks with integrated analytics and predictive modeling capabilities.",
-      icon: "⚠️",
-      stat: "94.2%",
-      unit: "Accuracy Rate"
+      title: "Smart Email Predictor",
+      description: "Intelligently delays important emails by exactly 30 minutes after the deadline while prioritizing spam.",
+      icon: "📧",
+      stat: "98.7%",
+      unit: "Missed Deadlines"
     },
     {
-      title: "Document Management System",
-      description: "Centralized repository for all compliance documents with version control and access management.",
-      icon: "📁",
-      stat: "12,847",
-      unit: "Documents Stored"
+      title: "Ergonomic Chair Randomizer",
+      description: "Automatically adjusts your chair height to a random setting every 15 minutes for 'improved posture awareness'.",
+      icon: "🪑",
+      stat: "2,341",
+      unit: "Chiropractor Visits"
     },
     {
-      title: "Workflow Automation",
-      description: "Streamline compliance processes with automated workflows and approval chains.",
-      icon: "⚙️",
-      stat: "156",
-      unit: "Active Workflows"
+      title: "Breakthrough Printer Detection System",
+      description: "Senses when you're in a hurry and triggers a critical low toner warning or mysterious paper jam.",
+      icon: "🖨️",
+      stat: "99.2%",
+      unit: "Urgent Documents Delayed"
     },
     {
-      title: "Integration Hub",
-      description: "Connect with external systems and third-party services through our secure API gateway.",
-      icon: "🔗",
-      stat: "23",
-      unit: "Active Integrations"
+      title: "Revolutionary Password Manager",
+      description: "Enforces password changes every 3 days with increasingly complex requirements that must not resemble previous 847 passwords.",
+      icon: "🔐",
+      stat: "4,892",
+      unit: "Reset Requests Daily"
     }
   ]);
 
@@ -76,9 +76,9 @@ const Features = () => {
       <main className="container mx-auto px-6 py-12">
         <div className="mx-auto max-w-6xl">
           <div className="mb-12 text-center">
-            <h2 className="mb-4 text-4xl font-bold">Platform Features</h2>
+            <h2 className="mb-4 text-4xl font-bold">Revolutionary Features</h2>
             <p className="text-lg text-corporate-gray">
-              Comprehensive compliance management tools designed for enterprise needs
+              Cutting-edge workplace productivity solutions that definitely won't make you question your life choices
             </p>
           </div>
 
@@ -103,51 +103,52 @@ const Features = () => {
           {/* Additional Info Section */}
           <div className="grid gap-6 md:grid-cols-2">
             <div className="rounded-lg border border-corporate-border bg-card p-6">
-              <h3 className="mb-4 text-xl font-semibold">Feature Roadmap</h3>
+              <h3 className="mb-4 text-xl font-semibold">Coming Soon™</h3>
               <div className="space-y-3">
                 <div className="flex items-center justify-between border-b border-corporate-border pb-2">
-                  <span className="text-sm">AI-Powered Risk Prediction</span>
-                  <span className="text-xs text-corporate-gray">Q2 2025</span>
+                  <span className="text-sm">Keyboard Keys That Randomly Stick</span>
+                  <span className="text-xs text-corporate-gray">Q2 2019</span>
                 </div>
                 <div className="flex items-center justify-between border-b border-corporate-border pb-2">
-                  <span className="text-sm">Enhanced Mobile Application</span>
-                  <span className="text-xs text-corporate-gray">Q3 2025</span>
+                  <span className="text-sm">Mouse Cursor Slight Lag Feature</span>
+                  <span className="text-xs text-corporate-gray">Q3 2018</span>
                 </div>
                 <div className="flex items-center justify-between border-b border-corporate-border pb-2">
-                  <span className="text-sm">Blockchain Audit Trail</span>
-                  <span className="text-xs text-corporate-gray">Q4 2025</span>
+                  <span className="text-sm">Mandatory Fun Algorithm</span>
+                  <span className="text-xs text-corporate-gray">Q4 2017</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm">Advanced Analytics Suite</span>
-                  <span className="text-xs text-corporate-gray">Q1 2026</span>
+                  <span className="text-sm">Adaptive Timezone Confusion</span>
+                  <span className="text-xs text-corporate-gray">Soon™</span>
                 </div>
               </div>
             </div>
 
             <div className="rounded-lg border border-corporate-border bg-card p-6">
-              <h3 className="mb-4 text-xl font-semibold">System Capabilities</h3>
+              <h3 className="mb-4 text-xl font-semibold">Premium Guarantees*</h3>
               <div className="space-y-3">
                 <div className="flex items-center space-x-3">
                   <div className="h-2 w-2 rounded-full bg-corporate-blue" />
-                  <span className="text-sm">99.9% Uptime SLA Guarantee</span>
+                  <span className="text-sm">99.9% Downtime During Critical Hours</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <div className="h-2 w-2 rounded-full bg-corporate-blue" />
-                  <span className="text-sm">Enterprise-grade Security (ISO 27001)</span>
+                  <span className="text-sm">Security Questions You'll Never Remember</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <div className="h-2 w-2 rounded-full bg-corporate-blue" />
-                  <span className="text-sm">24/7 Technical Support</span>
+                  <span className="text-sm">24/7 Hold Music Experience</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <div className="h-2 w-2 rounded-full bg-corporate-blue" />
-                  <span className="text-sm">Unlimited Data Storage</span>
+                  <span className="text-sm">Data Storage Until First Disaster</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <div className="h-2 w-2 rounded-full bg-corporate-blue" />
-                  <span className="text-sm">Multi-region Deployment</span>
+                  <span className="text-sm">Deployment Across Servers We Found</span>
                 </div>
               </div>
+              <p className="mt-4 text-xs text-corporate-gray italic">*Terms subject to creative interpretation</p>
             </div>
           </div>
         </div>

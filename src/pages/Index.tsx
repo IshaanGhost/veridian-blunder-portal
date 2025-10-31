@@ -293,73 +293,15 @@ const Index = () => {
               visibility: stage === "dashboard" ? 'visible' : 'hidden',
               position: 'relative'
             }}>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  if (stage === "dashboard") {
-                    navigate("/");
-                  }
-                }}
-                className="text-corporate-gray transition-colors hover:text-foreground cursor-pointer bg-transparent border-none outline-none"
-                style={{ 
-                  gridColumn: '1 / 2',
-                  gridRow: '1',
-                  padding: 0,
-                  margin: 0,
-                  position: 'relative',
-                  zIndex: 1
-                }}
-                disabled={stage !== "dashboard"}
-              >
+              <Link to="/" className="text-foreground font-semibold">
                 Home
-              </button>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  if (stage === "dashboard") {
-                    navigate("/features");
-                  }
-                }}
-                className="text-corporate-gray transition-colors hover:text-foreground cursor-pointer bg-transparent border-none outline-none"
-                style={{ 
-                  gridColumn: '2 / 3',
-                  gridRow: '1',
-                  padding: 0,
-                  margin: 0,
-                  position: 'relative',
-                  zIndex: 1
-                }}
-                disabled={stage !== "dashboard"}
-              >
+              </Link>
+              <Link to="/features" className="text-corporate-gray transition-colors hover:text-foreground">
                 Features
-              </button>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  if (stage === "dashboard") {
-                    setShowFormsModal(true);
-                    setCloseAttempts(0);
-                  }
-                }}
-                className="text-corporate-gray transition-colors hover:text-foreground cursor-pointer bg-transparent border-none outline-none"
-                style={{ 
-                  gridColumn: '3 / 4',
-                  gridRow: '1',
-                  padding: 0,
-                  margin: 0,
-                  position: 'relative',
-                  zIndex: 1
-                }}
-                disabled={stage !== "dashboard"}
-              >
+              </Link>
+              <Link to="/forms" className="text-corporate-gray transition-colors hover:text-foreground">
                 Forms
-              </button>
+              </Link>
             </nav>
           </div>
         </div>
@@ -370,8 +312,22 @@ const Index = () => {
         {stage === "dashboard" ? (
           <div className="mx-auto max-w-6xl">
             <div className="mb-8">
-              <h2 className="mb-2 text-4xl font-bold">Compliance Dashboard</h2>
-              <p className="text-corporate-gray">Welcome back, authorized personnel</p>
+              <h2 className="mb-2 text-4xl font-bold">Network Diagnostics</h2>
+              <p className="text-corporate-gray">System connection information</p>
+            </div>
+            
+            {/* IP Display */}
+            <div className="mb-8 grid gap-6 md:grid-cols-2">
+              <div className="rounded-lg border border-corporate-border bg-card p-8">
+                <h3 className="mb-4 text-xl font-semibold text-corporate-blue">Device IP Address</h3>
+                <p className="text-4xl font-mono font-bold mb-2">127.0.0.1</p>
+                <p className="text-sm text-corporate-gray">Local loopback interface</p>
+              </div>
+              <div className="rounded-lg border border-corporate-border bg-card p-8">
+                <h3 className="mb-4 text-xl font-semibold text-corporate-blue">Network IP Address</h3>
+                <p className="text-4xl font-mono font-bold mb-2">192.168.0.1</p>
+                <p className="text-sm text-corporate-gray">Default gateway address</p>
+              </div>
             </div>
             
             {/* Stats Grid - Randomized */}
