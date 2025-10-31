@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const Index = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [stage, setStage] = useState<"login" | "dashboard">("login");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -259,24 +260,24 @@ const Index = () => {
               <h1 className="text-xl font-bold">Veridian Dynamics</h1>
             </div>
             <nav className="flex space-x-6">
-              <Link
-                to="/"
-                className="text-corporate-gray transition-colors hover:text-foreground"
+              <button
+                onClick={() => navigate("/")}
+                className="text-corporate-gray transition-colors hover:text-foreground cursor-pointer bg-transparent border-none"
               >
                 Home
-              </Link>
-              <Link
-                to="/features"
-                className="text-corporate-gray transition-colors hover:text-foreground"
+              </button>
+              <button
+                onClick={() => navigate("/features")}
+                className="text-corporate-gray transition-colors hover:text-foreground cursor-pointer bg-transparent border-none"
               >
                 Features
-              </Link>
-              <Link
-                to="/forms"
-                  className="text-corporate-gray transition-colors hover:text-foreground"
-                >
+              </button>
+              <button
+                onClick={() => navigate("/forms")}
+                className="text-corporate-gray transition-colors hover:text-foreground cursor-pointer bg-transparent border-none"
+              >
                 Forms
-              </Link>
+              </button>
             </nav>
           </div>
         </div>
