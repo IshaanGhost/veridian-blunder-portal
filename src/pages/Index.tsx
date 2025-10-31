@@ -285,53 +285,47 @@ const Index = () => {
               <div className="h-8 w-8 rounded bg-corporate-blue" />
               <h1 className="text-xl font-bold">Veridian Dynamics</h1>
             </div>
-            {stage === "dashboard" && (
-              <nav style={{ display: 'flex', flexDirection: 'row', gap: '24px', alignItems: 'center' }}>
-                <div style={{ order: 0, flexShrink: 0 }}>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      navigate("/");
-                    }}
-                    className="text-corporate-gray transition-colors hover:text-foreground cursor-pointer bg-transparent border-none outline-none"
-                    style={{ padding: 0, margin: 0 }}
-                  >
-                    Home
-                  </button>
-                </div>
-                <div style={{ order: 1, flexShrink: 0 }}>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      navigate("/features");
-                    }}
-                    className="text-corporate-gray transition-colors hover:text-foreground cursor-pointer bg-transparent border-none outline-none"
-                    style={{ padding: 0, margin: 0 }}
-                  >
-                    Features
-                  </button>
-                </div>
-                <div style={{ order: 2, flexShrink: 0 }}>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setShowFormsModal(true);
-                      setCloseAttempts(0);
-                    }}
-                    className="text-corporate-gray transition-colors hover:text-foreground cursor-pointer bg-transparent border-none outline-none"
-                    style={{ padding: 0, margin: 0 }}
-                  >
-                    Forms
-                  </button>
-                </div>
+            {stage === "dashboard" ? (
+              <nav style={{ display: 'grid', gridTemplateColumns: 'auto auto auto', gap: '24px', alignItems: 'center' }}>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    navigate("/");
+                  }}
+                  className="text-corporate-gray transition-colors hover:text-foreground cursor-pointer bg-transparent border-none outline-none"
+                  style={{ gridColumn: '1', padding: 0, margin: 0 }}
+                >
+                  Home
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    navigate("/features");
+                  }}
+                  className="text-corporate-gray transition-colors hover:text-foreground cursor-pointer bg-transparent border-none outline-none"
+                  style={{ gridColumn: '2', padding: 0, margin: 0 }}
+                >
+                  Features
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setShowFormsModal(true);
+                    setCloseAttempts(0);
+                  }}
+                  className="text-corporate-gray transition-colors hover:text-foreground cursor-pointer bg-transparent border-none outline-none"
+                  style={{ gridColumn: '3', padding: 0, margin: 0 }}
+                >
+                  Forms
+                </button>
               </nav>
-            )}
+            ) : null}
           </div>
         </div>
       </header>
@@ -568,31 +562,29 @@ const Index = () => {
       )}
 
       {/* Forms Modal - Requires 2 close clicks */}
-      <Dialog 
-        open={showFormsModal}
-        onOpenChange={(open) => {
-          if (open) {
-            setShowFormsModal(true);
-            setCloseAttempts(0);
-          } else {
-            const newAttempts = closeAttempts + 1;
-            setCloseAttempts(newAttempts);
-            if (newAttempts >= 2) {
-              setShowFormsModal(false);
-              setCloseAttempts(0);
-              setFormSubmitted(false);
-              setFormData({
-                name: "",
-                email: "",
-                department: "",
-                requestType: "",
-                priority: "",
-                description: ""
-              });
+      {showFormsModal && (
+        <Dialog 
+          open={true}
+          onOpenChange={(open) => {
+            if (!open) {
+              const newAttempts = closeAttempts + 1;
+              setCloseAttempts(newAttempts);
+              if (newAttempts >= 2) {
+                setShowFormsModal(false);
+                setCloseAttempts(0);
+                setFormSubmitted(false);
+                setFormData({
+                  name: "",
+                  email: "",
+                  department: "",
+                  requestType: "",
+                  priority: "",
+                  description: ""
+                });
+              }
             }
-          }
-        }}
-      >
+          }}
+        >
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-2xl">Compliance Request Form</DialogTitle>
@@ -718,7 +710,8 @@ const Index = () => {
             </form>
           )}
         </DialogContent>
-      </Dialog>
+        </Dialog>
+      )}
 
       {/* Footer */}
       <footer className="mt-20 border-t border-corporate-border bg-corporate-darker py-8">
