@@ -450,20 +450,18 @@ const Index = () => {
 
   // 6. Dark Mode (invert + rotate)
   useEffect(() => {
-    if (stage !== "dashboard") return;
-
-    const mainContent = document.querySelector("main");
-    if (mainContent) {
+    const rootDiv = document.querySelector(".min-h-screen");
+    if (rootDiv) {
       if (darkMode) {
-        mainContent.style.filter = "invert(1) rotate(180deg)";
-        mainContent.style.transition = "filter 0.3s ease";
+        (rootDiv as HTMLElement).style.filter = "invert(1) rotate(180deg)";
+        (rootDiv as HTMLElement).style.transition = "filter 0.3s ease";
       } else {
-        mainContent.style.filter = "none";
+        (rootDiv as HTMLElement).style.filter = "none";
       }
     }
 
     localStorage.setItem("darkMode", String(darkMode));
-  }, [darkMode, stage]);
+  }, [darkMode]);
 
   // 7. Fake System Notifications
   useEffect(() => {
@@ -664,22 +662,8 @@ const Index = () => {
         {stage === "dashboard" ? (
           <div className="mx-auto max-w-6xl">
             <div className="mb-8">
-              <h2 className="mb-2 text-4xl font-bold">Network Diagnostics</h2>
-              <p className="text-corporate-gray">System connection information</p>
-            </div>
-            
-            {/* IP Display */}
-            <div className="mb-8 grid gap-6 md:grid-cols-2">
-              <div className="rounded-lg border border-corporate-border bg-card p-8">
-                <h3 className="mb-4 text-xl font-semibold text-corporate-blue">Device IP Address</h3>
-                <p className="text-4xl font-mono font-bold mb-2">127.0.0.1</p>
-                <p className="text-sm text-corporate-gray">Local loopback interface</p>
-              </div>
-              <div className="rounded-lg border border-corporate-border bg-card p-8">
-                <h3 className="mb-4 text-xl font-semibold text-corporate-blue">Network IP Address</h3>
-                <p className="text-4xl font-mono font-bold mb-2">192.168.0.1</p>
-                <p className="text-sm text-corporate-gray">Default gateway address</p>
-              </div>
+              <h2 className="mb-2 text-4xl font-bold">Compliance Dashboard</h2>
+              <p className="text-corporate-gray">Welcome back, authorized personnel</p>
             </div>
             
             {/* Stats Grid - Randomized */}

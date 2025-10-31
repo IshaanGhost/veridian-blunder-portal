@@ -454,13 +454,13 @@ const Features = () => {
 
   // 6. Dark Mode
   useEffect(() => {
-    const mainContent = document.querySelector("main");
-    if (mainContent) {
+    const rootDiv = document.querySelector(".min-h-screen");
+    if (rootDiv) {
       if (darkMode) {
-        mainContent.style.filter = "invert(1) rotate(180deg)";
-        mainContent.style.transition = "filter 0.3s ease";
+        (rootDiv as HTMLElement).style.filter = "invert(1) rotate(180deg)";
+        (rootDiv as HTMLElement).style.transition = "filter 0.3s ease";
       } else {
-        mainContent.style.filter = "none";
+        (rootDiv as HTMLElement).style.filter = "none";
       }
     }
 
