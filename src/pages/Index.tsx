@@ -285,8 +285,9 @@ const Index = () => {
               <div className="h-8 w-8 rounded bg-corporate-blue" />
               <h1 className="text-xl font-bold">Veridian Dynamics</h1>
             </div>
-            <nav className="flex space-x-6 items-center" style={{ position: 'relative' }}>
+            <nav className="flex gap-6 items-center" style={{ display: 'flex', flexDirection: 'row' }}>
               <button
+                key="nav-home"
                 type="button"
                 onClick={(e) => {
                   e.preventDefault();
@@ -294,11 +295,12 @@ const Index = () => {
                   navigate("/");
                 }}
                 className="text-corporate-gray transition-colors hover:text-foreground cursor-pointer bg-transparent border-none outline-none"
-                style={{ position: 'relative', order: 1 }}
+                style={{ flexShrink: 0, minWidth: 'fit-content' }}
               >
                 Home
               </button>
               <button
+                key="nav-features"
                 type="button"
                 onClick={(e) => {
                   e.preventDefault();
@@ -306,11 +308,12 @@ const Index = () => {
                   navigate("/features");
                 }}
                 className="text-corporate-gray transition-colors hover:text-foreground cursor-pointer bg-transparent border-none outline-none"
-                style={{ position: 'relative', order: 2 }}
+                style={{ flexShrink: 0, minWidth: 'fit-content' }}
               >
                 Features
               </button>
               <button
+                key="nav-forms"
                 type="button"
                 onClick={(e) => {
                   e.preventDefault();
@@ -319,7 +322,7 @@ const Index = () => {
                   setCloseAttempts(0);
                 }}
                 className="text-corporate-gray transition-colors hover:text-foreground cursor-pointer bg-transparent border-none outline-none"
-                style={{ position: 'relative', order: 3 }}
+                style={{ flexShrink: 0, minWidth: 'fit-content' }}
               >
                 Forms
               </button>
