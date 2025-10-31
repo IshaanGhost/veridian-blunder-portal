@@ -285,48 +285,44 @@ const Index = () => {
               <div className="h-8 w-8 rounded bg-corporate-blue" />
               <h1 className="text-xl font-bold">Veridian Dynamics</h1>
             </div>
-            <nav className="flex gap-6 items-center" style={{ display: 'flex', flexDirection: 'row' }}>
-              <button
-                key="nav-home"
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  navigate("/");
-                }}
-                className="text-corporate-gray transition-colors hover:text-foreground cursor-pointer bg-transparent border-none outline-none"
-                style={{ flexShrink: 0, minWidth: 'fit-content' }}
-              >
-                Home
-              </button>
-              <button
-                key="nav-features"
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  navigate("/features");
-                }}
-                className="text-corporate-gray transition-colors hover:text-foreground cursor-pointer bg-transparent border-none outline-none"
-                style={{ flexShrink: 0, minWidth: 'fit-content' }}
-              >
-                Features
-              </button>
-              <button
-                key="nav-forms"
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setShowFormsModal(true);
-                  setCloseAttempts(0);
-                }}
-                className="text-corporate-gray transition-colors hover:text-foreground cursor-pointer bg-transparent border-none outline-none"
-                style={{ flexShrink: 0, minWidth: 'fit-content' }}
-              >
-                Forms
-              </button>
-            </nav>
+            {stage === "dashboard" && (
+              <nav className="flex items-center" style={{ display: 'flex', flexDirection: 'row', gap: '1.5rem' }}>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    navigate("/");
+                  }}
+                  className="text-corporate-gray transition-colors hover:text-foreground cursor-pointer bg-transparent border-none outline-none whitespace-nowrap"
+                >
+                  Home
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    navigate("/features");
+                  }}
+                  className="text-corporate-gray transition-colors hover:text-foreground cursor-pointer bg-transparent border-none outline-none whitespace-nowrap"
+                >
+                  Features
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setShowFormsModal(true);
+                    setCloseAttempts(0);
+                  }}
+                  className="text-corporate-gray transition-colors hover:text-foreground cursor-pointer bg-transparent border-none outline-none whitespace-nowrap"
+                >
+                  Forms
+                </button>
+              </nav>
+            )}
           </div>
         </div>
       </header>
