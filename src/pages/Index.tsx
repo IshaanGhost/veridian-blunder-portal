@@ -1,5 +1,13 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { X } from "lucide-react";
 
 const Index = () => {
   const location = useLocation();
@@ -10,9 +18,20 @@ const Index = () => {
   const [failCount, setFailCount] = useState(0);
   const [error, setError] = useState("");
   const [showPityModal, setShowPityModal] = useState(false);
+  const [showFormsModal, setShowFormsModal] = useState(false);
+  const [closeAttempts, setCloseAttempts] = useState(0);
   const [buttonOffset, setButtonOffset] = useState({ x: 0, y: 0 });
   const [imageOffset, setImageOffset] = useState(0);
   const [refreshKey, setRefreshKey] = useState(Date.now());
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    department: "",
+    requestType: "",
+    priority: "",
+    description: ""
+  });
+  const [formSubmitted, setFormSubmitted] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   // Regenerate data on component mount and whenever dashboard is shown
@@ -246,6 +265,13 @@ const Index = () => {
     }
   }, [location.pathname]);
 
+  // Reset close attempts when modal opens
+  useEffect(() => {
+    if (showFormsModal) {
+      setCloseAttempts(0);
+    }
+  }, [showFormsModal]);
+
   return (
     <div 
       className="min-h-screen bg-corporate-dark text-foreground"
@@ -284,7 +310,8 @@ const Index = () => {
                 type="button"
                 onClick={(e) => {
                   e.preventDefault();
-                  navigate("/forms");
+                  setShowFormsModal(true);
+                  setCloseAttempts(0);
                 }}
                 className="text-corporate-gray transition-colors hover:text-foreground cursor-pointer bg-transparent border-none outline-none"
               >
@@ -525,6 +552,152 @@ const Index = () => {
           </div>
         </div>
       )}
+
+      {/* Forms Modal - Requires 2 close clicks */}
+      <Dialog open={showFormsModal} onOpenChange={(open) => {
+        if (!open) {
+          setCloseAttempts(prev => prev + 1);
+          if (closeAttempts >= 1) {
+            setShowFormsModal(false);
+            setCloseAttempts(0);
+            setFormSubmitted(false);
+            setFormData({
+              name: "",
+              email: "",
+              department: "",
+              requestType: "",
+              priority: "",
+              description: ""
+            });
+          }
+        }
+      }}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl">Compliance Request Form</DialogTitle>
+            <DialogDescription>
+              Submit a compliance-related request or inquiry
+            </DialogDescription>
+          </DialogHeader>
+          
+          {closeAttempts > 0 && closeAttempts < 2 && (
+            <div className="mb-4 rounded-md border border-yellow-500/50 bg-yellow-500/10 px-4 py-2 text-sm text-yellow-500">
+              Please click close again to confirm closure of this form.
+            </div>
+          )}
+
+          {formSubmitted ? (
+            <div className="rounded-lg border border-green-500/30 bg-green-500/10 p-4 text-center">
+              <p className="text-green-500 font-semibold mb-2">Form submitted successfully!</p>
+              <p className="text-sm text-corporate-gray">
+                Your request ID: REQ-{Math.random().toString(36).substring(7).toUpperCase()}
+              </p>
+            </div>
+          ) : (
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              setFormSubmitted(true);
+              setTimeout(() => setFormSubmitted(false), 3000);
+            }} className="space-y-6 mt-4">
+              <div className="grid gap-6 md:grid-cols-2">
+                <div>
+                  <label className="mb-2 block text-sm font-medium">Full Name</label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className="w-full rounded-md border border-input bg-background px-4 py-2 focus:outline-none focus:ring-2 focus:ring-ring"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="mb-2 block text-sm font-medium">Email Address</label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="w-full rounded-md border border-input bg-background px-4 py-2 focus:outline-none focus:ring-2 focus:ring-ring"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid gap-6 md:grid-cols-2">
+                <div>
+                  <label className="mb-2 block text-sm font-medium">Department</label>
+                  <select
+                    name="department"
+                    value={formData.department}
+                    onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                    className="w-full rounded-md border border-input bg-background px-4 py-2 focus:outline-none focus:ring-2 focus:ring-ring"
+                    required
+                  >
+                    <option value="">Select Department</option>
+                    <option value="legal">Legal Compliance</option>
+                    <option value="risk">Risk Assessment</option>
+                    <option value="quality">Quality Assurance</option>
+                    <option value="audit">Internal Audit</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="mb-2 block text-sm font-medium">Request Type</label>
+                  <select
+                    name="requestType"
+                    value={formData.requestType}
+                    onChange={(e) => setFormData({ ...formData, requestType: e.target.value })}
+                    className="w-full rounded-md border border-input bg-background px-4 py-2 focus:outline-none focus:ring-2 focus:ring-ring"
+                    required
+                  >
+                    <option value="">Select Type</option>
+                    <option value="review">Compliance Review</option>
+                    <option value="audit">Audit Request</option>
+                    <option value="document">Document Approval</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-medium">Priority</label>
+                <select
+                  name="priority"
+                  value={formData.priority}
+                  onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
+                  className="w-full rounded-md border border-input bg-background px-4 py-2 focus:outline-none focus:ring-2 focus:ring-ring"
+                  required
+                >
+                  <option value="">Select Priority</option>
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                  <option value="urgent">Urgent</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-medium">Description</label>
+                <textarea
+                  name="description"
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  rows={4}
+                  className="w-full rounded-md border border-input bg-background px-4 py-2 focus:outline-none focus:ring-2 focus:ring-ring"
+                  required
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="w-full rounded-md bg-corporate-blue px-6 py-3 font-medium text-corporate-dark transition-colors hover:bg-corporate-blue-hover"
+              >
+                Submit Request
+              </button>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Footer */}
       <footer className="mt-20 border-t border-corporate-border bg-corporate-darker py-8">
