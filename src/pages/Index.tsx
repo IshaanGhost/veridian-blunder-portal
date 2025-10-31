@@ -1,6 +1,8 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
+import { Link, useLocation } from "react-router-dom";
 
 const Index = () => {
+  const location = useLocation();
   const [stage, setStage] = useState<"login" | "dashboard">("login");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -8,9 +10,100 @@ const Index = () => {
   const [error, setError] = useState("");
   const [showPityModal, setShowPityModal] = useState(false);
   const [buttonOffset, setButtonOffset] = useState({ x: 0, y: 0 });
-  const [navItems, setNavItems] = useState(["Home", "Features", "Forms"]);
   const [imageOffset, setImageOffset] = useState(0);
   const buttonRef = useRef<HTMLButtonElement>(null);
+
+  // Generate random dashboard data
+  const generateRandomStats = () => {
+    const statTemplates = [
+      { label: "Active Sessions", value: () => Math.floor(Math.random() * 900 + 100), suffix: "", trend: () => `${Math.random() > 0.5 ? "↑" : "↓"} ${Math.floor(Math.random() * 20)}% from last week` },
+      { label: "Pending Reviews", value: () => Math.floor(Math.random() * 2000 + 500), suffix: "", trend: () => `${Math.random() > 0.5 ? "↑" : "↓"} ${Math.floor(Math.random() * 15)}% from last week` },
+      { label: "Compliance Score", value: () => (Math.random() * 10 + 90).toFixed(1), suffix: "%", trend: () => Math.random() > 0.5 ? "Above target threshold" : "Below target threshold" },
+      { label: "System Uptime", value: () => (Math.random() * 0.5 + 99.5).toFixed(1), suffix: "%", trend: () => "Last 30 days" },
+      { label: "Data Processing", value: () => Math.floor(Math.random() * 50000 + 10000), suffix: " units", trend: () => `${Math.random() > 0.5 ? "↑" : "↓"} ${Math.floor(Math.random() * 25)}% trend` },
+      { label: "Alert Count", value: () => Math.floor(Math.random() * 200 + 50), suffix: "", trend: () => `${Math.random() > 0.5 ? "↑" : "↓"} ${Math.floor(Math.random() * 30)}% this week` },
+      { label: "Audit Completion", value: () => (Math.random() * 20 + 80).toFixed(1), suffix: "%", trend: () => `${Math.floor(Math.random() * 100)} audits completed` },
+      { label: "Response Time", value: () => (Math.random() * 500 + 100).toFixed(0), suffix: "ms", trend: () => `Average latency` }
+    ];
+
+    // Shuffle and take 4 random stats
+    const shuffled = [...statTemplates].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, 4).map(template => ({
+      label: template.label,
+      value: template.value(),
+      suffix: template.suffix,
+      trend: template.trend()
+    }));
+  };
+
+  const generateRandomActivity = () => {
+    const activities = [
+      { name: "Document Processing", value: Math.floor(Math.random() * 100) },
+      { name: "Compliance Checks", value: Math.floor(Math.random() * 100) },
+      { name: "Security Audits", value: Math.floor(Math.random() * 100) },
+      { name: "Report Generation", value: Math.floor(Math.random() * 100) },
+      { name: "Data Validation", value: Math.floor(Math.random() * 100) },
+      { name: "Risk Assessments", value: Math.floor(Math.random() * 100) }
+    ];
+    return activities.sort(() => Math.random() - 0.5).slice(0, 4);
+  };
+
+  const generateRandomFeed = () => {
+    const feedItems = [
+      "User session initiated - Compliance Module 7B",
+      "Automated compliance check completed",
+      "Report export requested - Format: PDF",
+      "Security audit scheduled for 14:00 UTC",
+      "Database backup completed successfully",
+      "Risk assessment review in progress",
+      "Document approval workflow initiated",
+      "Compliance violation detected - Action required",
+      "System update deployed successfully",
+      "New compliance policy published",
+      "Audit trail export completed",
+      "Performance metrics updated"
+    ];
+    
+    const times = ["2 minutes ago", "15 minutes ago", "32 minutes ago", "1 hour ago", "2 hours ago", "3 hours ago", "5 hours ago"];
+    
+    return feedItems.sort(() => Math.random() - 0.5).slice(0, 5).map((item, i) => ({
+      text: item,
+      time: times.sort(() => Math.random() - 0.5)[i] || times[0]
+    }));
+  };
+
+  const generateRandomDepartments = () => {
+    const depts = [
+      { name: "Legal Compliance", code: "LC", base: 2341 },
+      { name: "Risk Assessment", code: "RA", base: 1892 },
+      { name: "Quality Assurance", code: "QA", base: 1567 },
+      { name: "Internal Audit", code: "IA", base: 1234 },
+      { name: "Security Operations", code: "SO", base: 2100 },
+      { name: "Data Governance", code: "DG", base: 1789 }
+    ];
+    
+    return depts.map(dept => ({
+      name: dept.name,
+      code: `${dept.code}-${Math.floor(Math.random() * 9999)}`,
+      value: Math.floor(dept.base * (0.8 + Math.random() * 0.4))
+    })).sort(() => Math.random() - 0.5).slice(0, 4);
+  };
+
+  const generateRandomMetrics = () => {
+    return [
+      { label: "Regulatory Adherence", value: (Math.random() * 5 + 95).toFixed(1), suffix: "%", note: "ISO 27001 Compliant" },
+      { label: "Data Integrity Index", value: (Math.random() * 3 + 97).toFixed(1), suffix: "%", note: "Verified Accuracy Rate" },
+      { label: "Audit Trail Coverage", value: "100", suffix: "%", note: "All Transactions Logged" },
+      { label: "System Reliability", value: (Math.random() * 2 + 98).toFixed(1), suffix: "%", note: "Uptime Performance" }
+    ].sort(() => Math.random() - 0.5).slice(0, 3);
+  };
+
+  // Generate random data when dashboard is shown
+  const dashboardStats = useMemo(() => generateRandomStats(), [stage, location.pathname]);
+  const activityData = useMemo(() => generateRandomActivity(), [stage, location.pathname]);
+  const activityFeed = useMemo(() => generateRandomFeed(), [stage, location.pathname]);
+  const departments = useMemo(() => generateRandomDepartments(), [stage, location.pathname]);
+  const metrics = useMemo(() => generateRandomMetrics(), [stage, location.pathname]);
 
   // Backspace trap
   useEffect(() => {
@@ -36,16 +129,6 @@ const Index = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const shuffleNav = () => {
-    setNavItems((prev) => {
-      const shuffled = [...prev];
-      for (let i = shuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-      }
-      return shuffled;
-    });
-  };
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (stage !== "login" || !buttonRef.current) return;
@@ -77,7 +160,6 @@ const Index = () => {
       setStage("dashboard");
       setError("");
       setFailCount(0);
-      shuffleNav();
     } else {
       const newFailCount = failCount + 1;
       setFailCount(newFailCount);
@@ -86,7 +168,6 @@ const Index = () => {
       if (newFailCount >= 3) {
         setShowPityModal(true);
       }
-      shuffleNav();
     }
   };
 
@@ -94,15 +175,21 @@ const Index = () => {
   useEffect(() => {
     if (showPityModal) {
       const timer = setTimeout(() => {
-        setShowPityModal(false);
-        setStage("dashboard");
-        setFailCount(0);
-        setError("");
-        shuffleNav();
+    setShowPityModal(false);
+    setStage("dashboard");
+    setFailCount(0);
+    setError("");
       }, 3000);
       return () => clearTimeout(timer);
     }
   }, [showPityModal]);
+
+  // Reset to login when navigating away from dashboard
+  useEffect(() => {
+    if (location.pathname !== "/" && stage === "dashboard") {
+      setStage("login");
+    }
+  }, [location.pathname]);
 
   return (
     <div 
@@ -118,15 +205,24 @@ const Index = () => {
               <h1 className="text-xl font-bold">Veridian Dynamics</h1>
             </div>
             <nav className="flex space-x-6">
-              {navItems.map((item) => (
-                <button
-                  key={item}
-                  onClick={shuffleNav}
+              <Link
+                to="/"
+                className="text-corporate-gray transition-colors hover:text-foreground"
+              >
+                Home
+              </Link>
+              <Link
+                to="/features"
+                className="text-corporate-gray transition-colors hover:text-foreground"
+              >
+                Features
+              </Link>
+              <Link
+                to="/forms"
                   className="text-corporate-gray transition-colors hover:text-foreground"
                 >
-                  {item}
-                </button>
-              ))}
+                Forms
+              </Link>
             </nav>
           </div>
         </div>
@@ -141,28 +237,17 @@ const Index = () => {
               <p className="text-corporate-gray">Welcome back, authorized personnel</p>
             </div>
             
-            {/* Stats Grid */}
+            {/* Stats Grid - Randomized */}
             <div className="mb-8 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-              <div className="rounded-lg border border-corporate-border bg-card p-6">
-                <h3 className="mb-2 text-sm font-medium text-corporate-gray">Active Sessions</h3>
-                <p className="text-4xl font-bold text-corporate-blue">847</p>
-                <p className="mt-2 text-xs text-corporate-gray">↑ 12% from last week</p>
-              </div>
-              <div className="rounded-lg border border-corporate-border bg-card p-6">
-                <h3 className="mb-2 text-sm font-medium text-corporate-gray">Pending Reviews</h3>
-                <p className="text-4xl font-bold text-corporate-blue">1,203</p>
-                <p className="mt-2 text-xs text-corporate-gray">↓ 8% from last week</p>
-              </div>
-              <div className="rounded-lg border border-corporate-border bg-card p-6">
-                <h3 className="mb-2 text-sm font-medium text-corporate-gray">Compliance Score</h3>
-                <p className="text-4xl font-bold text-corporate-blue">94.7%</p>
-                <p className="mt-2 text-xs text-corporate-gray">Above target threshold</p>
-              </div>
-              <div className="rounded-lg border border-corporate-border bg-card p-6">
-                <h3 className="mb-2 text-sm font-medium text-corporate-gray">System Uptime</h3>
-                <p className="text-4xl font-bold text-corporate-blue">99.9%</p>
-                <p className="mt-2 text-xs text-corporate-gray">Last 30 days</p>
-              </div>
+              {dashboardStats.map((stat, index) => (
+                <div key={index} className="rounded-lg border border-corporate-border bg-card p-6">
+                  <h3 className="mb-2 text-sm font-medium text-corporate-gray">{stat.label}</h3>
+                  <p className="text-4xl font-bold text-corporate-blue">
+                    {typeof stat.value === 'number' ? stat.value.toLocaleString() : stat.value}{stat.suffix}
+                  </p>
+                  <p className="mt-2 text-xs text-corporate-gray">{stat.trend}</p>
+                </div>
+              ))}
             </div>
 
             {/* Charts Section */}
@@ -170,75 +255,33 @@ const Index = () => {
               <div className="rounded-lg border border-corporate-border bg-card p-6">
                 <h3 className="mb-4 text-xl font-semibold">Activity Overview</h3>
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-corporate-gray">Document Processing</span>
-                    <div className="flex-1 mx-4 h-2 bg-corporate-darker rounded-full overflow-hidden">
-                      <div className="h-full bg-corporate-blue" style={{ width: "78%" }} />
+                  {activityData.map((activity, index) => (
+                    <div key={index} className="flex items-center justify-between">
+                      <span className="text-sm text-corporate-gray">{activity.name}</span>
+                      <div className="flex-1 mx-4 h-2 bg-corporate-darker rounded-full overflow-hidden">
+                        <div className="h-full bg-corporate-blue" style={{ width: `${activity.value}%` }} />
+                      </div>
+                      <span className="text-sm font-medium">{activity.value}%</span>
                     </div>
-                    <span className="text-sm font-medium">78%</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-corporate-gray">Compliance Checks</span>
-                    <div className="flex-1 mx-4 h-2 bg-corporate-darker rounded-full overflow-hidden">
-                      <div className="h-full bg-corporate-blue" style={{ width: "65%" }} />
-                    </div>
-                    <span className="text-sm font-medium">65%</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-corporate-gray">Security Audits</span>
-                    <div className="flex-1 mx-4 h-2 bg-corporate-darker rounded-full overflow-hidden">
-                      <div className="h-full bg-corporate-blue" style={{ width: "92%" }} />
-                    </div>
-                    <span className="text-sm font-medium">92%</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-corporate-gray">Report Generation</span>
-                    <div className="flex-1 mx-4 h-2 bg-corporate-darker rounded-full overflow-hidden">
-                      <div className="h-full bg-corporate-blue" style={{ width: "45%" }} />
-                    </div>
-                    <span className="text-sm font-medium">45%</span>
-                  </div>
+                  ))}
                 </div>
               </div>
 
               <div className="rounded-lg border border-corporate-border bg-card p-6">
                 <h3 className="mb-4 text-xl font-semibold">Recent Activity Feed</h3>
                 <div className="space-y-3 max-h-64 overflow-y-auto">
-                  <div className="flex items-start space-x-3 pb-3 border-b border-corporate-border">
-                    <div className="h-2 w-2 rounded-full bg-corporate-blue mt-2" />
-                    <div className="flex-1">
-                      <p className="text-sm">User session initiated - Compliance Module 7B</p>
-                      <p className="text-xs text-corporate-gray mt-1">2 minutes ago</p>
+                  {activityFeed.map((item, index) => (
+                    <div
+                      key={index}
+                      className={`flex items-start space-x-3 ${index < activityFeed.length - 1 ? "pb-3 border-b border-corporate-border" : ""}`}
+                    >
+                      <div className="h-2 w-2 rounded-full bg-corporate-blue mt-2" />
+                      <div className="flex-1">
+                        <p className="text-sm">{item.text}</p>
+                        <p className="text-xs text-corporate-gray mt-1">{item.time}</p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-start space-x-3 pb-3 border-b border-corporate-border">
-                    <div className="h-2 w-2 rounded-full bg-corporate-blue mt-2" />
-                    <div className="flex-1">
-                      <p className="text-sm">Automated compliance check completed</p>
-                      <p className="text-xs text-corporate-gray mt-1">15 minutes ago</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start space-x-3 pb-3 border-b border-corporate-border">
-                    <div className="h-2 w-2 rounded-full bg-corporate-blue mt-2" />
-                    <div className="flex-1">
-                      <p className="text-sm">Report export requested - Format: PDF</p>
-                      <p className="text-xs text-corporate-gray mt-1">32 minutes ago</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start space-x-3 pb-3 border-b border-corporate-border">
-                    <div className="h-2 w-2 rounded-full bg-corporate-blue mt-2" />
-                    <div className="flex-1">
-                      <p className="text-sm">Security audit scheduled for 14:00 UTC</p>
-                      <p className="text-xs text-corporate-gray mt-1">1 hour ago</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <div className="h-2 w-2 rounded-full bg-corporate-blue mt-2" />
-                    <div className="flex-1">
-                      <p className="text-sm">Database backup completed successfully</p>
-                      <p className="text-xs text-corporate-gray mt-1">2 hours ago</p>
-                    </div>
-                  </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -248,34 +291,15 @@ const Index = () => {
               <div className="rounded-lg border border-corporate-border bg-card p-6">
                 <h3 className="mb-4 text-xl font-semibold">Top Departments by Activity</h3>
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 rounded bg-corporate-darker">
-                    <div>
-                      <p className="font-medium">Legal Compliance</p>
-                      <p className="text-xs text-corporate-gray">Dept. Code: LC-8472</p>
+                  {departments.map((dept, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 rounded bg-corporate-darker">
+                      <div>
+                        <p className="font-medium">{dept.name}</p>
+                        <p className="text-xs text-corporate-gray">Dept. Code: {dept.code}</p>
+                      </div>
+                      <span className="text-corporate-blue font-semibold">{dept.value.toLocaleString()}</span>
                     </div>
-                    <span className="text-corporate-blue font-semibold">2,341</span>
-                  </div>
-                  <div className="flex items-center justify-between p-3 rounded bg-corporate-darker">
-                    <div>
-                      <p className="font-medium">Risk Assessment</p>
-                      <p className="text-xs text-corporate-gray">Dept. Code: RA-3291</p>
-                    </div>
-                    <span className="text-corporate-blue font-semibold">1,892</span>
-                  </div>
-                  <div className="flex items-center justify-between p-3 rounded bg-corporate-darker">
-                    <div>
-                      <p className="font-medium">Quality Assurance</p>
-                      <p className="text-xs text-corporate-gray">Dept. Code: QA-5643</p>
-                    </div>
-                    <span className="text-corporate-blue font-semibold">1,567</span>
-                  </div>
-                  <div className="flex items-center justify-between p-3 rounded bg-corporate-darker">
-                    <div>
-                      <p className="font-medium">Internal Audit</p>
-                      <p className="text-xs text-corporate-gray">Dept. Code: IA-2201</p>
-                    </div>
-                    <span className="text-corporate-blue font-semibold">1,234</span>
-                  </div>
+                  ))}
                 </div>
               </div>
 
@@ -326,27 +350,19 @@ const Index = () => {
                   </div>
                 </div>
               </div>
-            </div>
+              </div>
 
             {/* Additional Info Section */}
             <div className="rounded-lg border border-corporate-border bg-card p-6">
               <h3 className="mb-4 text-xl font-semibold">Compliance Metrics Summary</h3>
               <div className="grid gap-4 md:grid-cols-3">
-                <div className="p-4 rounded bg-corporate-darker">
-                  <p className="text-sm text-corporate-gray mb-1">Regulatory Adherence</p>
-                  <p className="text-2xl font-bold">98.3%</p>
-                  <p className="text-xs text-corporate-gray mt-1">ISO 27001 Compliant</p>
-                </div>
-                <div className="p-4 rounded bg-corporate-darker">
-                  <p className="text-sm text-corporate-gray mb-1">Data Integrity Index</p>
-                  <p className="text-2xl font-bold">99.7%</p>
-                  <p className="text-xs text-corporate-gray mt-1">Verified Accuracy Rate</p>
-                </div>
-                <div className="p-4 rounded bg-corporate-darker">
-                  <p className="text-sm text-corporate-gray mb-1">Audit Trail Coverage</p>
-                  <p className="text-2xl font-bold">100%</p>
-                  <p className="text-xs text-corporate-gray mt-1">All Transactions Logged</p>
-                </div>
+                {metrics.map((metric, index) => (
+                  <div key={index} className="p-4 rounded bg-corporate-darker">
+                    <p className="text-sm text-corporate-gray mb-1">{metric.label}</p>
+                    <p className="text-2xl font-bold">{metric.value}{metric.suffix}</p>
+                    <p className="text-xs text-corporate-gray mt-1">{metric.note}</p>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -362,35 +378,35 @@ const Index = () => {
             </div>
 
             <div className="rounded-lg border border-corporate-border bg-card p-8">
-              <div className="mb-6">
-                <label className="mb-2 block text-sm font-medium">
-                  Enter username
-                </label>
-                <input
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  <div className="mb-6">
+                    <label className="mb-2 block text-sm font-medium">
+                      Enter username
+                    </label>
+                    <input
+                      type="text"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
                   onKeyPress={(e) => e.key === "Enter" && handleLogin()}
-                  className="w-full rounded-md border border-input bg-background px-4 py-2 focus:outline-none focus:ring-2 focus:ring-ring"
-                  placeholder="username"
-                />
-              </div>
+                      className="w-full rounded-md border border-input bg-background px-4 py-2 focus:outline-none focus:ring-2 focus:ring-ring"
+                      placeholder="username"
+                    />
+                  </div>
               
-              <div className="mb-6">
-                <label className="mb-2 block text-sm font-medium">
-                  Enter password
-                </label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  <div className="mb-6">
+                    <label className="mb-2 block text-sm font-medium">
+                      Enter password
+                    </label>
+                    <input
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
                   onKeyPress={(e) => e.key === "Enter" && handleLogin()}
-                  className="w-full rounded-md border border-input bg-background px-4 py-2 focus:outline-none focus:ring-2 focus:ring-ring"
-                  placeholder="password"
-                />
-              </div>
+                      className="w-full rounded-md border border-input bg-background px-4 py-2 focus:outline-none focus:ring-2 focus:ring-ring"
+                      placeholder="password"
+                    />
+                  </div>
 
-              <button
+                  <button
                 ref={buttonRef}
                 onClick={handleLogin}
                 className="w-full rounded-md bg-corporate-blue px-4 py-2 font-medium text-corporate-dark transition-all hover:bg-corporate-blue-hover"
@@ -398,9 +414,9 @@ const Index = () => {
                   transform: `translate(${buttonOffset.x}px, ${buttonOffset.y}px)`,
                   transition: "transform 0.2s ease-out",
                 }}
-              >
-                Login
-              </button>
+                  >
+                    Login
+                  </button>
 
               {error && (
                 <div className="mt-4 rounded-md border border-destructive/50 bg-destructive/10 px-4 py-2 text-sm text-destructive">
