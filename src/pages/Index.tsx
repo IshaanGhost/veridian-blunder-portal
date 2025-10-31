@@ -554,28 +554,37 @@ const Index = () => {
       )}
 
       {/* Forms Modal - Requires 2 close clicks */}
-      <Dialog open={showFormsModal} onOpenChange={(open) => {
-        if (!open) {
-          setCloseAttempts(prev => {
-            const newAttempts = prev + 1;
-            if (newAttempts >= 2) {
-              // Second close click - actually close the modal
-              setShowFormsModal(false);
-              setFormSubmitted(false);
-              setFormData({
-                name: "",
-                email: "",
-                department: "",
-                requestType: "",
-                priority: "",
-                description: ""
-              });
-              return 0;
-            }
-            return newAttempts;
-          });
-        }
-      }}>
+      <Dialog 
+        open={showFormsModal} 
+        onOpenChange={(open) => {
+          if (open) {
+            // Opening the modal
+            setShowFormsModal(true);
+            setCloseAttempts(0);
+          } else {
+            // Attempting to close - require 2 clicks
+            setCloseAttempts(prev => {
+              const newAttempts = prev + 1;
+              if (newAttempts >= 2) {
+                // Second close click - actually close the modal
+                setShowFormsModal(false);
+                setFormSubmitted(false);
+                setFormData({
+                  name: "",
+                  email: "",
+                  department: "",
+                  requestType: "",
+                  priority: "",
+                  description: ""
+                });
+                return 0;
+              }
+              // First close click - keep modal open
+              return newAttempts;
+            });
+          }
+        }}
+      >
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-2xl">Compliance Request Form</DialogTitle>
