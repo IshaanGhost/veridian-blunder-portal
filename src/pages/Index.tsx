@@ -11,7 +11,31 @@ const Index = () => {
   const [showPityModal, setShowPityModal] = useState(false);
   const [buttonOffset, setButtonOffset] = useState({ x: 0, y: 0 });
   const [imageOffset, setImageOffset] = useState(0);
+  const [refreshKey, setRefreshKey] = useState(Date.now());
   const buttonRef = useRef<HTMLButtonElement>(null);
+
+  // Regenerate data on component mount and whenever dashboard is shown
+  useEffect(() => {
+    // Always set refresh key on mount to ensure randomization
+    setRefreshKey(Date.now());
+    
+    // Also regenerate when page becomes visible (e.g., after tab switch or refresh)
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && stage === "dashboard") {
+        setRefreshKey(Date.now());
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [stage]);
+
+  useEffect(() => {
+    // Also regenerate when switching to dashboard
+    if (stage === "dashboard") {
+      setRefreshKey(Date.now());
+    }
+  }, [stage]);
 
   // Generate random dashboard data
   const generateRandomStats = () => {
@@ -98,12 +122,42 @@ const Index = () => {
     ].sort(() => Math.random() - 0.5).slice(0, 3);
   };
 
-  // Generate random data when dashboard is shown
-  const dashboardStats = useMemo(() => generateRandomStats(), [stage, location.pathname]);
-  const activityData = useMemo(() => generateRandomActivity(), [stage, location.pathname]);
-  const activityFeed = useMemo(() => generateRandomFeed(), [stage, location.pathname]);
-  const departments = useMemo(() => generateRandomDepartments(), [stage, location.pathname]);
-  const metrics = useMemo(() => generateRandomMetrics(), [stage, location.pathname]);
+  // Generate random data when dashboard is shown - refreshKey ensures new data on each load
+  // We force regeneration by using refreshKey as dependency
+  const dashboardStats = useMemo(() => {
+    if (stage === "dashboard") {
+      return generateRandomStats();
+    }
+    return [];
+  }, [stage, refreshKey]);
+  
+  const activityData = useMemo(() => {
+    if (stage === "dashboard") {
+      return generateRandomActivity();
+    }
+    return [];
+  }, [stage, refreshKey]);
+  
+  const activityFeed = useMemo(() => {
+    if (stage === "dashboard") {
+      return generateRandomFeed();
+    }
+    return [];
+  }, [stage, refreshKey]);
+  
+  const departments = useMemo(() => {
+    if (stage === "dashboard") {
+      return generateRandomDepartments();
+    }
+    return [];
+  }, [stage, refreshKey]);
+  
+  const metrics = useMemo(() => {
+    if (stage === "dashboard") {
+      return generateRandomMetrics();
+    }
+    return [];
+  }, [stage, refreshKey]);
 
   // Backspace trap
   useEffect(() => {
@@ -184,9 +238,9 @@ const Index = () => {
     }
   }, [showPityModal]);
 
-  // Reset to login when navigating away from dashboard
+  // Reset to login when navigating away from home page
   useEffect(() => {
-    if (location.pathname !== "/" && stage === "dashboard") {
+    if (location.pathname !== "/") {
       setStage("login");
     }
   }, [location.pathname]);
