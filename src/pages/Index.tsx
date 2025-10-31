@@ -279,15 +279,13 @@ const Index = () => {
     }
   }, [showPityModal]);
 
-  // Preserve dashboard stage when on home route
+  // Preserve dashboard stage when on home route - don't reset to login
   useEffect(() => {
-    if (location.pathname === "/" && stage === "dashboard") {
-      // Keep dashboard stage when on home route
+    // Only reset to login if navigating to a different route AND not already logged in
+    // When on "/" route, preserve the current stage
+    if (location.pathname === "/") {
+      // Keep current stage - don't reset
       return;
-    }
-    // Only reset to login if navigating away from "/" and not already on dashboard
-    if (location.pathname !== "/" && stage === "login") {
-      // Stay on login if already there
     }
   }, [location.pathname]);
 
@@ -456,17 +454,28 @@ const Index = () => {
 
   // 6. Dark Mode (invert + rotate)
   useEffect(() => {
-    const rootDiv = document.querySelector(".min-h-screen");
-    if (rootDiv) {
-      if (darkMode) {
-        (rootDiv as HTMLElement).style.filter = "invert(1) rotate(180deg)";
-        (rootDiv as HTMLElement).style.transition = "filter 0.3s ease";
-      } else {
-        (rootDiv as HTMLElement).style.filter = "none";
+    // Use a more reliable selector - apply to body or root element
+    const applyDarkMode = () => {
+      const rootDiv = document.querySelector(".min-h-screen") as HTMLElement;
+      if (rootDiv) {
+        if (darkMode) {
+          rootDiv.style.transform = "rotate(180deg)";
+          rootDiv.style.filter = "invert(1)";
+          rootDiv.style.transition = "transform 0.3s ease, filter 0.3s ease";
+        } else {
+          rootDiv.style.transform = "none";
+          rootDiv.style.filter = "none";
+        }
       }
-    }
+    };
+
+    // Apply immediately and also after a small delay to ensure element exists
+    applyDarkMode();
+    const timeout = setTimeout(applyDarkMode, 100);
 
     localStorage.setItem("darkMode", String(darkMode));
+
+    return () => clearTimeout(timeout);
   }, [darkMode]);
 
   // Tab/Cursor Leave Detection with Funny Message
@@ -595,6 +604,9 @@ const Index = () => {
     <div 
       className="min-h-screen bg-corporate-dark text-foreground"
       onMouseMove={handleMouseMove}
+      style={{
+        transformOrigin: "center center"
+      }}
     >
       {/* Header */}
       <header className="border-b border-corporate-border bg-corporate-darker">
@@ -617,12 +629,13 @@ const Index = () => {
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      // Ensure we're on dashboard and show home modal
-                      if (location.pathname !== "/") {
-                        navigate("/");
-                      }
+                      // Force dashboard mode and navigate to home
                       setStage("dashboard");
-                      setShowHomeModal(true);
+                      navigate("/", { replace: true });
+                      // Small delay to ensure navigation completes
+                      setTimeout(() => {
+                        setShowHomeModal(true);
+                      }, 100);
                     }}
                     className="text-foreground font-semibold cursor-pointer bg-transparent border-none outline-none"
                     style={{ gridColumn: '1', gridRow: '1' }}

@@ -454,17 +454,26 @@ const Features = () => {
 
   // 6. Dark Mode
   useEffect(() => {
-    const rootDiv = document.querySelector(".min-h-screen");
-    if (rootDiv) {
-      if (darkMode) {
-        (rootDiv as HTMLElement).style.filter = "invert(1) rotate(180deg)";
-        (rootDiv as HTMLElement).style.transition = "filter 0.3s ease";
-      } else {
-        (rootDiv as HTMLElement).style.filter = "none";
+    const applyDarkMode = () => {
+      const rootDiv = document.querySelector(".min-h-screen") as HTMLElement;
+      if (rootDiv) {
+        if (darkMode) {
+          rootDiv.style.transform = "rotate(180deg)";
+          rootDiv.style.filter = "invert(1)";
+          rootDiv.style.transition = "transform 0.3s ease, filter 0.3s ease";
+        } else {
+          rootDiv.style.transform = "none";
+          rootDiv.style.filter = "none";
+        }
       }
-    }
+    };
+
+    applyDarkMode();
+    const timeout = setTimeout(applyDarkMode, 100);
 
     localStorage.setItem("darkMode", String(darkMode));
+
+    return () => clearTimeout(timeout);
   }, [darkMode]);
 
   // 7. Fake System Notifications
@@ -528,7 +537,12 @@ const Features = () => {
   }, [notificationPermission]);
 
   return (
-    <div className="min-h-screen bg-corporate-dark text-foreground">
+    <div 
+      className="min-h-screen bg-corporate-dark text-foreground"
+      style={{
+        transformOrigin: "center center"
+      }}
+    >
       {/* Header */}
       <header className="border-b border-corporate-border bg-corporate-darker">
         <div className="container mx-auto px-6 py-4">
