@@ -10,7 +10,7 @@ A satirical corporate compliance portal built with React and TypeScript, featuri
 - Forms require increasingly absurd validation rules
 - Interactive features range from fun to frustratingly inconvenient
 
-**Live Demo**: Available after deployment
+**Live Demo**: [https://veridian-blunder-portal.lovable.app](https://veridian-blunder-portal.lovable.app)
 
 ## ✨ Features
 
