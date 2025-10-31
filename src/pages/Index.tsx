@@ -556,20 +556,24 @@ const Index = () => {
       {/* Forms Modal - Requires 2 close clicks */}
       <Dialog open={showFormsModal} onOpenChange={(open) => {
         if (!open) {
-          setCloseAttempts(prev => prev + 1);
-          if (closeAttempts >= 1) {
-            setShowFormsModal(false);
-            setCloseAttempts(0);
-            setFormSubmitted(false);
-            setFormData({
-              name: "",
-              email: "",
-              department: "",
-              requestType: "",
-              priority: "",
-              description: ""
-            });
-          }
+          setCloseAttempts(prev => {
+            const newAttempts = prev + 1;
+            if (newAttempts >= 2) {
+              // Second close click - actually close the modal
+              setShowFormsModal(false);
+              setFormSubmitted(false);
+              setFormData({
+                name: "",
+                email: "",
+                department: "",
+                requestType: "",
+                priority: "",
+                description: ""
+              });
+              return 0;
+            }
+            return newAttempts;
+          });
         }
       }}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
