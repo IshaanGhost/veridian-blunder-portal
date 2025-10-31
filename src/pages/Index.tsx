@@ -286,41 +286,50 @@ const Index = () => {
               <h1 className="text-xl font-bold">Veridian Dynamics</h1>
             </div>
             {stage === "dashboard" && (
-              <nav className="flex items-center" style={{ display: 'flex', flexDirection: 'row', gap: '1.5rem' }}>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    navigate("/");
-                  }}
-                  className="text-corporate-gray transition-colors hover:text-foreground cursor-pointer bg-transparent border-none outline-none whitespace-nowrap"
-                >
-                  Home
-                </button>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    navigate("/features");
-                  }}
-                  className="text-corporate-gray transition-colors hover:text-foreground cursor-pointer bg-transparent border-none outline-none whitespace-nowrap"
-                >
-                  Features
-                </button>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setShowFormsModal(true);
-                    setCloseAttempts(0);
-                  }}
-                  className="text-corporate-gray transition-colors hover:text-foreground cursor-pointer bg-transparent border-none outline-none whitespace-nowrap"
-                >
-                  Forms
-                </button>
+              <nav style={{ display: 'flex', flexDirection: 'row', gap: '24px', alignItems: 'center' }}>
+                <div style={{ order: 0, flexShrink: 0 }}>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      navigate("/");
+                    }}
+                    className="text-corporate-gray transition-colors hover:text-foreground cursor-pointer bg-transparent border-none outline-none"
+                    style={{ padding: 0, margin: 0 }}
+                  >
+                    Home
+                  </button>
+                </div>
+                <div style={{ order: 1, flexShrink: 0 }}>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      navigate("/features");
+                    }}
+                    className="text-corporate-gray transition-colors hover:text-foreground cursor-pointer bg-transparent border-none outline-none"
+                    style={{ padding: 0, margin: 0 }}
+                  >
+                    Features
+                  </button>
+                </div>
+                <div style={{ order: 2, flexShrink: 0 }}>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setShowFormsModal(true);
+                      setCloseAttempts(0);
+                    }}
+                    className="text-corporate-gray transition-colors hover:text-foreground cursor-pointer bg-transparent border-none outline-none"
+                    style={{ padding: 0, margin: 0 }}
+                  >
+                    Forms
+                  </button>
+                </div>
               </nav>
             )}
           </div>
@@ -560,33 +569,27 @@ const Index = () => {
 
       {/* Forms Modal - Requires 2 close clicks */}
       <Dialog 
-        open={showFormsModal} 
+        open={showFormsModal}
         onOpenChange={(open) => {
           if (open) {
-            // Opening the modal
             setShowFormsModal(true);
             setCloseAttempts(0);
           } else {
-            // Attempting to close - require 2 clicks
-            setCloseAttempts(prev => {
-              const newAttempts = prev + 1;
-              if (newAttempts >= 2) {
-                // Second close click - actually close the modal
-                setShowFormsModal(false);
-                setFormSubmitted(false);
-                setFormData({
-                  name: "",
-                  email: "",
-                  department: "",
-                  requestType: "",
-                  priority: "",
-                  description: ""
-                });
-                return 0;
-              }
-              // First close click - keep modal open
-              return newAttempts;
-            });
+            const newAttempts = closeAttempts + 1;
+            setCloseAttempts(newAttempts);
+            if (newAttempts >= 2) {
+              setShowFormsModal(false);
+              setCloseAttempts(0);
+              setFormSubmitted(false);
+              setFormData({
+                name: "",
+                email: "",
+                department: "",
+                requestType: "",
+                priority: "",
+                description: ""
+              });
+            }
           }
         }}
       >
